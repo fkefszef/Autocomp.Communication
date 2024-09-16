@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33801.468
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autocomp.Communication.Sniffer", "Autocomp.Communication\Autocomp.Communication.Sniffer.csproj", "{2D2F0729-F977-4CDF-914D-565CC574EADF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D2F0729-F977-4CDF-914D-565CC574EADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2F0729-F977-4CDF-914D-565CC574EADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2F0729-F977-4CDF-914D-565CC574EADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2F0729-F977-4CDF-914D-565CC574EADF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2D2A288-BA5A-46CD-84E5-C6FB2032373E}
+	EndGlobalSection
+EndGlobal
