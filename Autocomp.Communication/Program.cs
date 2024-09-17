@@ -22,7 +22,7 @@ namespace Autocomp.Communication
 
     interface IMessageProvider
     {
-        Sniffer.Message MessageReceived(object source, ElapsedEventArgs e);
+        Sniffer.Message MessageReceived();
     }
 
     public class FakeMessageProvider : IMessageProvider
@@ -39,7 +39,7 @@ namespace Autocomp.Communication
         private string generated_content { get; set; }
 
         // Implementacja interfejsu
-        public Sniffer.Message MessageReceived(object source, ElapsedEventArgs e)
+        public Sniffer.Message MessageReceived()
         {
             GenerateRandomMessage();
             return new Sniffer.Message(generated_date, generated_type, generated_content);
@@ -60,7 +60,7 @@ namespace Autocomp.Communication
         //(musi byc typu void dlatego inna funkcja odpowiada za zwracanie)
         public void wywolywanie_randommsg(object sender, ElapsedEventArgs e)
         {
-            GenerateRandomMessage();
+            MessageReceived();
         }
 
         // Konstruktor z timerem
@@ -87,6 +87,9 @@ namespace Autocomp.Communication
         private TimeSpan recordingLength;
         private DateTime startTime;
         private DateTime lastMessageTime;
+        private bool isPaused = false;
+        private DateTime paused_time;
+        private double play_speed = 1.0;
 
         public PlayerMessageProvider(List<Sniffer.Message> msg)
         {
@@ -101,7 +104,7 @@ namespace Autocomp.Communication
             }
         }
 
-        public Sniffer.Message MessageReceived(object source, ElapsedEventArgs e)
+        public Sniffer.Message MessageReceived()
         {
             Sniffer.Message message = messages[currIndex];
             //Autoinkrementowanie listy, a¿ do jej koñca
@@ -117,13 +120,36 @@ namespace Autocomp.Communication
         //Asynchroniczna Funckja Play ¿eby u¿yæ await Task.Delay, która odpowiada za opóŸnienie
         public async Task Play()
         {
+            if (isPaused)
+            {
+                // Jesli odtwarzanie jest zatrzymane, oblicz czas od kiedy zaczac odtwarzanie
+                TimeSpan resume_offset = paused_time - startTime;
+                startTime = DateTime.Now - resume_offset;
+                isPaused = false; // Reset pauzy
+            }
+            else
+            {
+                startTime = DateTime.Now;
+            }
+
+
+
             // Pobierz czas pierwszej wiadomoœci
             DateTime firstMessageTime = messages[0].DateTime;
             // Odtwarzanie wiadomoœci
             foreach (var message in messages)
             {
+                if (isPaused)
+                {
+                    break; // Zatrzymaj odtwarzanie gdy pauza
+                }
+
                 // Oblicz czas, kiedy nale¿y wyœwietliæ wiadomoœæ
                 TimeSpan delay = message.DateTime - firstMessageTime;
+
+                // Podzielenie opoznienia przez predkosc
+                delay = TimeSpan.FromTicks((long)(delay.Ticks / play_speed));
+
                 // Oczekiwanie przed wyœwietleniem wiadomoœci
                 await Task.Delay(delay);
                 lastMessageTime = DateTime.Now;
@@ -149,5 +175,38 @@ namespace Autocomp.Communication
             double percentage = (effectiveElapsed.TotalSeconds / recordingLength.TotalSeconds) * 100;
             return percentage;
         }
+
+        public DateTime SetPlayPercentage(double percentage)
+        {
+            // Czas ostatniej wiadomosci
+            DateTime endtime = messages[messages.Count].DateTime;
+            
+            // Obliczenie dlugosci
+            TimeSpan duration = endtime - startTime;
+
+            // Obliczenie czasu uzywajac podanego procentu
+            TimeSpan timefromstart = TimeSpan.FromTicks((long)(duration.Ticks * (percentage / 100)));
+
+            //Zwrocenie rzeczywistego czasu
+            return startTime.Add(timefromstart);
+        }
+
+        public void Pause()
+        {
+            if (!isPaused)
+            {
+                isPaused = true; 
+                paused_time = DateTime.Now; // Zapisz czas kiedy odtwarzanie zostalo zatrzymane
+            }
+
+
+        }
+
+        public void SetSpeed(double speed)
+        {
+            play_speed = speed;
+
+        }
+
     }
 }
