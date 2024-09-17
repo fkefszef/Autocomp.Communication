@@ -1,5 +1,7 @@
 using Autocomp.Communication.Sniffer;
+using System.Drawing.Text;
 using System.Timers;
+using System.Windows.Forms;
 
 namespace Autocomp.Communication
 {
@@ -39,6 +41,7 @@ namespace Autocomp.Communication
         // Implementacja interfejsu
         public Sniffer.Message MessageReceived(object source, ElapsedEventArgs e)
         {
+            GenerateRandomMessage();
             return new Sniffer.Message(generated_date, generated_type, generated_content);
         }
 
@@ -73,6 +76,78 @@ namespace Autocomp.Communication
             r_timer.AutoReset = true;
             r_timer.Enabled = true;
             r_timer.Start();
+        }
+    }
+
+
+    public class PlayerMessageProvider : IMessageProvider
+    {
+        private List<Sniffer.Message> messages;
+        private int currIndex;
+        private TimeSpan recordingLength;
+        private DateTime startTime;
+        private DateTime lastMessageTime;
+
+        public PlayerMessageProvider(List<Sniffer.Message> msg)
+        {
+            messages = msg;
+            currIndex = 0;
+
+            if (messages.Count > 0)
+            {
+                DateTime firstmsg = messages[0].DateTime;
+                DateTime lastmsg = messages[messages.Count - 1].DateTime;
+                recordingLength = lastmsg - firstmsg;
+            }
+        }
+
+        public Sniffer.Message MessageReceived(object source, ElapsedEventArgs e)
+        {
+            Sniffer.Message message = messages[currIndex];
+            //Autoinkrementowanie listy, a¿ do jej koñca
+            currIndex = (currIndex + 1) % messages.Count;
+            return message;
+        }
+
+        public TimeSpan RecordingLength()
+        {
+            return recordingLength;
+        }
+
+        //Asynchroniczna Funckja Play ¿eby u¿yæ await Task.Delay, która odpowiada za opóŸnienie
+        public async Task Play()
+        {
+            // Pobierz czas pierwszej wiadomoœci
+            DateTime firstMessageTime = messages[0].DateTime;
+            // Odtwarzanie wiadomoœci
+            foreach (var message in messages)
+            {
+                // Oblicz czas, kiedy nale¿y wyœwietliæ wiadomoœæ
+                TimeSpan delay = message.DateTime - firstMessageTime;
+                // Oczekiwanie przed wyœwietleniem wiadomoœci
+                await Task.Delay(delay);
+                lastMessageTime = DateTime.Now;
+                double percentage = PlayedPercentageChanged();
+                // Wyœwietl wiadomoœæ (mo¿na tu dodaæ logikê do faktycznego wyœwietlania lub przetwarzania wiadomoœci)
+                //Kod
+            }
+        }
+        
+        public double PlayedPercentageChanged()
+        {
+            if (recordingLength.TotalSeconds <= 0)
+            {
+                return 0;
+            }
+            // Oblicza czas trwania od rozpoczêcia odtwarzania
+            TimeSpan elapsedTime = DateTime.Now - startTime;
+            // Ustala maksymalny czas, do którego mo¿emy obliczaæ procent odegranego nagrania
+            TimeSpan endTime = messages[messages.Count - 1].DateTime - messages[0].DateTime;
+            //Jezeli wiadomosc zostala skonczona to wyswietla ukonczenie a jak nie to procent ukonczenia
+            TimeSpan effectiveElapsed = elapsedTime > endTime ? endTime : elapsedTime;
+            // Oblicza procent na podstawie up³ywu czasu
+            double percentage = (effectiveElapsed.TotalSeconds / recordingLength.TotalSeconds) * 100;
+            return percentage;
         }
     }
 }
