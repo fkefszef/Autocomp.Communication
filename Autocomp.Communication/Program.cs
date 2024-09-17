@@ -1,7 +1,6 @@
 using Autocomp.Communication.Sniffer;
 using System.Timers;
 
-
 namespace Autocomp.Communication
 {
     internal static class Program
@@ -19,17 +18,15 @@ namespace Autocomp.Communication
         }
     }
 
-
     interface IMessageProvider
     {
         Sniffer.Message MessageReceived(object source, ElapsedEventArgs e);
     }
 
-
     public class FakeMessageProvider : IMessageProvider
     {
         // Obiekt random
-        static Random r = new Random();
+        private static Random r = new Random();
 
         // Lista z losowymi typami i trescia
         private List<string> types = new List<string> { "ServerLauncher", "StateMachineLauncher", "XmlConnectionBroker", "OperatorSwitcher" };
@@ -42,11 +39,11 @@ namespace Autocomp.Communication
         // Implementacja interfejsu
         public Sniffer.Message MessageReceived(object source, ElapsedEventArgs e)
         {
-            RandomMessageGenerator();
             return new Sniffer.Message(generated_date, generated_type, generated_content);
         }
-        // Metoda losowo wybierajaca tresc i typ, która potem ustawia wygenerowane zmienne
-        public void RandomMessageGenerator()
+
+        // Metoda losowo wybieraj¹ca treœæ i typ, która potem ustawia wygenerowane zmienne
+        private void GenerateRandomMessage()
         {
             int r_types = r.Next(types.Count);
             int r_contents = r.Next(contents.Count);
@@ -54,22 +51,28 @@ namespace Autocomp.Communication
             generated_date = DateTime.Now;
             generated_type = types[r_types];
             generated_content = contents[r_contents];
-
         }
+
+        //Generuje losowa wiadomosc
+        //(musi byc typu void dlatego inna funkcja odpowiada za zwracanie)
+        public void wywolywanie_randommsg(object sender, ElapsedEventArgs e)
+        {
+            GenerateRandomMessage();
+        }
+
         // Konstruktor z timerem
         public FakeMessageProvider()
         {
             // Losowa liczba od 0 do 5 sekund
-            int r_int = r.Next(0,5000);
-
+            int r_int = r.Next(0, 5000);
             System.Timers.Timer r_timer = new System.Timers.Timer(r_int);
-            //Nie da sie zrobic tego na timerze. Timery dzialaja tylko z metodami typu void
-            //r_timer.Elapsed += MessageReceived;
+
+            r_timer.Interval = r.Next(1000, 5000);
+
+            r_timer.Elapsed += wywolywanie_randommsg;
             r_timer.AutoReset = true;
             r_timer.Enabled = true;
-
+            r_timer.Start();
         }
-
     }
-
 }
