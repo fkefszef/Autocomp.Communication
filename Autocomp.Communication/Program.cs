@@ -33,7 +33,6 @@ namespace Autocomp.Communication
         // Lista z losowymi typami i trescia
         private List<string> types = new List<string> { "ServerLauncher", "StateMachineLauncher", "XmlConnectionBroker", "OperatorSwitcher" };
         private List<string> contents = new List<string> { "G4XUh35UQGfz", "uwCuQ4taUyZV", "?=KDLGyDBBxfmP", "D8QmDFsbrrR3", "5TyPT5MaLSKK", "?=9jE48B5HJTbZ" };
-
         private DateTime generated_date { get; set; }
         private string generated_type { get; set; }
         private string generated_content { get; set; }
