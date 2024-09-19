@@ -32,14 +32,22 @@
             Czas = new ColumnHeader();
             Typ = new ColumnHeader();
             Treść = new ColumnHeader();
+            toolStrip1 = new ToolStrip();
+            toolStripLabel1 = new ToolStripLabel();
+            toolStripTextBox1 = new ToolStripTextBox();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripTextBox2 = new ToolStripTextBox();
+            textBox1 = new TextBox();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // listView1
             // 
             listView1.Columns.AddRange(new ColumnHeader[] { Czas, Typ, Treść });
-            listView1.Location = new Point(92, 71);
+            listView1.Location = new Point(2, 43);
+            listView1.Margin = new Padding(3, 2, 3, 2);
             listView1.Name = "listView1";
-            listView1.Size = new Size(505, 241);
+            listView1.Size = new Size(416, 296);
             listView1.TabIndex = 0;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
@@ -63,15 +71,64 @@
             Treść.Text = "Treść";
             Treść.Width = 100;
             // 
+            // toolStrip1
+            // 
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTextBox1, toolStripLabel2, toolStripTextBox2 });
+            toolStrip1.Location = new Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(700, 25);
+            toolStrip1.TabIndex = 1;
+            toolStrip1.Text = "toolStrip1";
+            toolStrip1.ItemClicked += toolStrip1_ItemClicked;
+            // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(48, 22);
+            toolStripLabel1.Text = "Zawiera";
+            // 
+            // toolStripTextBox1
+            // 
+            toolStripTextBox1.Name = "toolStripTextBox1";
+            toolStripTextBox1.Size = new Size(100, 25);
+            toolStripTextBox1.Click += toolStripTextBox1_Click;
+            toolStripTextBox1.TextChanged += toolStripTextBox1_TextChanged;
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(67, 22);
+            toolStripLabel2.Text = "Nie zawiera";
+            // 
+            // toolStripTextBox2
+            // 
+            toolStripTextBox2.Name = "toolStripTextBox2";
+            toolStripTextBox2.Size = new Size(100, 25);
+            toolStripTextBox2.TextChanged += toolStripTextBox2_TextChanged;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(424, 43);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(276, 296);
+            textBox1.TabIndex = 2;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(700, 338);
+            Controls.Add(textBox1);
+            Controls.Add(toolStrip1);
             Controls.Add(listView1);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
             Text = "Form1";
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -80,5 +137,11 @@
         private ColumnHeader Czas;
         private ColumnHeader Typ;
         private ColumnHeader Treść;
+        private ToolStrip toolStrip1;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripTextBox toolStripTextBox1;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripTextBox toolStripTextBox2;
+        private TextBox textBox1;
     }
 }
