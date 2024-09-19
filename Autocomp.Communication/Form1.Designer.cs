@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             listView1 = new ListView();
             Czas = new ColumnHeader();
             Typ = new ColumnHeader();
@@ -37,7 +38,9 @@
             toolStripTextBox1 = new ToolStripTextBox();
             toolStripLabel2 = new ToolStripLabel();
             toolStripTextBox2 = new ToolStripTextBox();
+            SaveButton = new ToolStripButton();
             textBox1 = new TextBox();
+            toolStripButton1 = new ToolStripButton();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -73,7 +76,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTextBox1, toolStripLabel2, toolStripTextBox2 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTextBox1, toolStripLabel2, toolStripTextBox2, SaveButton, toolStripButton1 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(700, 25);
@@ -106,6 +109,16 @@
             toolStripTextBox2.Size = new Size(100, 25);
             toolStripTextBox2.TextChanged += toolStripTextBox2_TextChanged;
             // 
+            // SaveButton
+            // 
+            SaveButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            SaveButton.Image = (Image)resources.GetObject("SaveButton.Image");
+            SaveButton.ImageTransparentColor = Color.Magenta;
+            SaveButton.Name = "SaveButton";
+            SaveButton.Size = new Size(23, 22);
+            SaveButton.Text = "toolStripButton1";
+            SaveButton.Click += SaveButton_Click;
+            // 
             // textBox1
             // 
             textBox1.Location = new Point(424, 43);
@@ -113,6 +126,16 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(276, 296);
             textBox1.TabIndex = 2;
+            // 
+            // toolStripButton1
+            // 
+            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.Image = (Image)resources.GetObject("toolStripButton1.Image");
+            toolStripButton1.ImageTransparentColor = Color.Magenta;
+            toolStripButton1.Name = "toolStripButton1";
+            toolStripButton1.Size = new Size(23, 22);
+            toolStripButton1.Text = "toolStripButton1";
+            toolStripButton1.Click += toolStripButton1_Click;
             // 
             // Form1
             // 
@@ -143,5 +166,7 @@
         private ToolStripLabel toolStripLabel2;
         private ToolStripTextBox toolStripTextBox2;
         private TextBox textBox1;
+        private ToolStripButton SaveButton;
+        private ToolStripButton toolStripButton1;
     }
 }

@@ -8,7 +8,13 @@ namespace Autocomp.Communication
     {
         private ListViewItem[] originalItems;
         private ListViewItem[] allItems;
-        
+        private bool isFilterActive = false;
+
+        private MessageDataHandler messageDataHandler = new MessageDataHandler();
+        private List<Sniffer.Message> allMessages = new List<Sniffer.Message>(); // Ca³a historia wiadomoœci
+        private List<Sniffer.Message> filteredMessages = new List<Sniffer.Message>(); // Przefiltrowane wiadomoœci
+
+
         public Form1()
         {
             InitializeComponent();
@@ -16,10 +22,6 @@ namespace Autocomp.Communication
             listView1.FullRowSelect = true; // Umo¿liwia zaznaczenie ca³ego wiersza
             listView1.MultiSelect = false;  // Umo¿liwia zaznaczenie tylko jednego elementu na raz
 
-            // Inicjalizacja TextBox
-           
-            // Inicjalizacja ListView
-            // ... (twój kod inicjalizuj¹cy ListView)
 
             // Event handler dla zaznaczenia wiersza w ListView
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
@@ -114,6 +116,68 @@ namespace Autocomp.Communication
             }
         }
 
-    
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            // Okno dialogowe z pytaniem, co zapisaæ
+            DialogResult result = MessageBox.Show("Czy chcesz zapisaæ ca³¹ historiê (Tak) czy tylko przefiltrowane wiersze (Nie)?",
+                                                  "Zapisz dane",
+                                                  MessageBoxButtons.YesNoCancel);
+
+            List<Sniffer.Message> messagesToSave = null;
+
+            if (result == DialogResult.Yes)
+            {
+                messagesToSave = allMessages; // Zapisz ca³¹ historiê
+            }
+            else if (result == DialogResult.No)
+            {
+                messagesToSave = filteredMessages; // Zapisz tylko przefiltrowane wiersze
+            }
+            else
+            {
+                return; // Anulowano operacjê
+            }
+
+            // Wywo³anie okna dialogowego wyboru lokalizacji zapisu pliku
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog.Title = "Wybierz lokalizacjê do zapisu";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Wywo³anie metody Save z klasy MessageDataHandler
+                    string filePath = saveFileDialog.FileName;
+
+                    try
+                    {
+                        messageDataHandler.Save(filePath, messagesToSave);
+                        MessageBox.Show("Wiadomoœci zapisane pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"B³¹d podczas zapisywania wiadomoœci: {ex.Message}", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (isFilterActive)
+            {
+                // Przywróæ domyœlne t³o i logi
+                listView1.BackColor = SystemColors.Window; // Przywraca domyœlne t³o
+                listView1.Items.Clear();
+                listView1.Items.AddRange(allItems);
+                isFilterActive = false;
+            }
+            else
+            {
+                // Zmieñ t³o na niebieskie i ukryj istniej¹ce logi
+                listView1.BackColor = Color.LightBlue;
+                listView1.Items.Clear();
+                isFilterActive = true;
+            }
+        }
     }
 }
