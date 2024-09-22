@@ -26,17 +26,21 @@ namespace Autocomp.Communication
             // Event handler dla zaznaczenia wiersza w ListView
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             FakeMessageProvider fakeMessageProvider = new FakeMessageProvider();
-
-            // Generuje 5 losowych wiadomoœci
             for (int i = 0; i < 5; i++)
             {
                 var message = fakeMessageProvider.MessageReceived();
 
+                // Dodaj wiadomoœæ do listy allMessages
+                allMessages.Add(message); // <---- Dodaj tê liniê
+
+                // Dodaj wiadomoœæ do ListView
                 ListViewItem item = new ListViewItem(message.DateTime.ToString());
                 item.SubItems.Add(message.Type.ToString()); // Typ wiadomoœci
                 item.SubItems.Add(message.Content.ToString()); // Treœæ wiadomoœci
                 listView1.Items.Add(item);
             }
+
+            
 
             // Przypisanie elementów listy do originalItems po dodaniu wiadomoœci
             originalItems = new ListViewItem[listView1.Items.Count];
@@ -80,6 +84,7 @@ namespace Autocomp.Communication
             // Dodawanie elementów, które spe³niaj¹ warunek filtru
             foreach (ListViewItem item in originalItems)
             {
+                // SprawdŸ, czy item ma co najmniej 2 subitemy przed uzyskaniem dostêpu do SubItems[1]
                 if (item.SubItems.Count > 1 && item.SubItems[1].Text.ToLower().Contains(filterText))
                 {
                     listView1.Items.Add(item);
@@ -101,6 +106,7 @@ namespace Autocomp.Communication
                 // Jeœli tekst jest pusty, przywróæ wszystkie elementy
                 listView1.Items.Clear();
                 listView1.Items.AddRange(allItems);
+                
             }
             else
             {
@@ -108,6 +114,7 @@ namespace Autocomp.Communication
                 listView1.Items.Clear();
                 foreach (ListViewItem item in originalItems)
                 {
+                    // SprawdŸ, czy item ma co najmniej 2 subitemy przed uzyskaniem dostêpu do SubItems[1]
                     if (item.SubItems.Count > 1 && !item.SubItems[1].Text.ToLower().Contains(filterText))
                     {
                         listView1.Items.Add(item);
@@ -127,15 +134,28 @@ namespace Autocomp.Communication
 
             if (result == DialogResult.Yes)
             {
-                messagesToSave = allMessages; // Zapisz ca³¹ historiê
+                // Zapisz ca³¹ historiê wiadomoœci
+                if (allMessages.Count == 0)
+                {
+                    MessageBox.Show("Brak wiadomoœci do zapisania.", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                messagesToSave = allMessages;
             }
             else if (result == DialogResult.No)
             {
-                messagesToSave = filteredMessages; // Zapisz tylko przefiltrowane wiersze
+                // SprawdŸ, czy s¹ przefiltrowane wiadomoœci
+                if (filteredMessages.Count == 0)
+                {
+                    MessageBox.Show("Brak przefiltrowanych wiadomoœci do zapisania.", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                messagesToSave = filteredMessages;
             }
             else
             {
-                return; // Anulowano operacjê
+                // Anulowano operacjê
+                return;
             }
 
             // Wywo³anie okna dialogowego wyboru lokalizacji zapisu pliku
@@ -145,11 +165,11 @@ namespace Autocomp.Communication
                 saveFileDialog.Title = "Wybierz lokalizacjê do zapisu";
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    // Wywo³anie metody Save z klasy MessageDataHandler
                     string filePath = saveFileDialog.FileName;
 
                     try
                     {
+                        // Wywo³anie metody Save z klasy MessageDataHandler
                         messageDataHandler.Save(filePath, messagesToSave);
                         MessageBox.Show("Wiadomoœci zapisane pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -179,5 +199,52 @@ namespace Autocomp.Communication
                 isFilterActive = true;
             }
         }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            
+                // Wywo³anie okna dialogowego do wyboru pliku
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                    openFileDialog.Title = "Wybierz plik z wiadomoœciami";
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filePath = openFileDialog.FileName;
+
+                        // Próba wczytania wiadomoœci
+                        if (messageDataHandler.TryLoad(filePath, out List<Sniffer.Message> loadedMessages))
+                        {
+                            // Wyczyszczenie listy przed dodaniem nowych wiadomoœci
+                            listView1.Items.Clear();
+
+                            allMessages = loadedMessages; // Zapisanie wczytanych wiadomoœci
+
+                            foreach (var message in loadedMessages)
+                            {
+                                ListViewItem item = new ListViewItem(message.DateTime.ToString());
+                                item.SubItems.Add(message.Type);
+                                item.SubItems.Add(message.Content);
+                                listView1.Items.Add(item);
+                            }
+
+                            // Zaktualizowanie originalItems i allItems
+                            originalItems = new ListViewItem[listView1.Items.Count];
+                            listView1.Items.CopyTo(originalItems, 0);
+                            allItems = new ListViewItem[originalItems.Length];
+                            originalItems.CopyTo(allItems, 0);
+
+                            MessageBox.Show("Wiadomoœci zosta³y wczytane pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Nie uda³o siê wczytaæ wiadomoœci.", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+
+        
     }
 }
