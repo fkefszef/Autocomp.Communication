@@ -16,6 +16,7 @@ namespace Autocomp.Communication
 
         PlayerMessageProvider playerMessageProvider = new PlayerMessageProvider();
 
+        bool autoscroll_enabled = false;
 
         public Form1()
         {
@@ -187,7 +188,7 @@ namespace Autocomp.Communication
             if (isFilterActive)
             {
                 // Przywróæ domyœlne t³o i logi
-                listView1.BackColor = SystemColors.Window; // Przywraca domyœlne t³o
+                toolStripButton1.BackColor = SystemColors.Window; // Przywraca domyœlne t³o
                 listView1.Items.Clear();
                 listView1.Items.AddRange(allItems);
                 isFilterActive = false;
@@ -195,7 +196,7 @@ namespace Autocomp.Communication
             else
             {
                 // Zmieñ t³o na niebieskie i ukryj istniej¹ce logi
-                listView1.BackColor = Color.LightBlue;
+                toolStripButton1.BackColor = Color.LightBlue;
                 listView1.Items.Clear();
                 isFilterActive = true;
             }
@@ -268,6 +269,24 @@ namespace Autocomp.Communication
 
         private void toolStripProgressBar1_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            autoscroll_enabled = !autoscroll_enabled;
+
+            if (autoscroll_enabled)
+            {
+                listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+                toolStripButton3.BackColor = Color.LightBlue;
+            }
+
+            else
+            {
+                toolStripButton3.BackColor = SystemColors.Control;
+            }
+
 
         }
     }
