@@ -40,8 +40,19 @@
             toolStripTextBox2 = new ToolStripTextBox();
             SaveButton = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
-            textBox1 = new TextBox();
             toolStripButton2 = new ToolStripButton();
+            playtoolStripButton = new ToolStripButton();
+            pausetoolStripButton = new ToolStripButton();
+            resettoolStripButton = new ToolStripButton();
+            stoptoolStripButton = new ToolStripButton();
+            toolStripDropDownButton1 = new ToolStripDropDownButton();
+            xToolStripMenuItem = new ToolStripMenuItem();
+            xToolStripMenuItem1 = new ToolStripMenuItem();
+            xToolStripMenuItem2 = new ToolStripMenuItem();
+            xToolStripMenuItem3 = new ToolStripMenuItem();
+            textBox1 = new TextBox();
+            process1 = new System.Diagnostics.Process();
+            toolStripProgressBar1 = new ToolStripProgressBar();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -77,7 +88,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTextBox1, toolStripLabel2, toolStripTextBox2, SaveButton, toolStripButton1, toolStripButton2 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTextBox1, toolStripLabel2, toolStripTextBox2, SaveButton, toolStripButton1, toolStripButton2, playtoolStripButton, pausetoolStripButton, resettoolStripButton, stoptoolStripButton, toolStripDropDownButton1, toolStripProgressBar1 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(700, 25);
@@ -130,14 +141,6 @@
             toolStripButton1.Text = "toolStripButton1";
             toolStripButton1.Click += toolStripButton1_Click;
             // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(424, 43);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(276, 296);
-            textBox1.TabIndex = 2;
-            // 
             // toolStripButton2
             // 
             toolStripButton2.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -147,6 +150,104 @@
             toolStripButton2.Size = new Size(23, 22);
             toolStripButton2.Text = "toolStripButton2";
             toolStripButton2.Click += toolStripButton2_Click;
+            // 
+            // playtoolStripButton
+            // 
+            playtoolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            playtoolStripButton.Image = (Image)resources.GetObject("playtoolStripButton.Image");
+            playtoolStripButton.ImageTransparentColor = Color.Magenta;
+            playtoolStripButton.Name = "playtoolStripButton";
+            playtoolStripButton.Size = new Size(23, 22);
+            playtoolStripButton.Text = "Odtwarzaj";
+            playtoolStripButton.Click += playtoolStripButton_Click;
+            // 
+            // pausetoolStripButton
+            // 
+            pausetoolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            pausetoolStripButton.Image = (Image)resources.GetObject("pausetoolStripButton.Image");
+            pausetoolStripButton.ImageTransparentColor = Color.Magenta;
+            pausetoolStripButton.Name = "pausetoolStripButton";
+            pausetoolStripButton.Size = new Size(23, 22);
+            pausetoolStripButton.Text = "Zapazuj";
+            pausetoolStripButton.Click += pausetoolStripButton_Click;
+            // 
+            // resettoolStripButton
+            // 
+            resettoolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            resettoolStripButton.Image = (Image)resources.GetObject("resettoolStripButton.Image");
+            resettoolStripButton.ImageTransparentColor = Color.Magenta;
+            resettoolStripButton.Name = "resettoolStripButton";
+            resettoolStripButton.Size = new Size(23, 22);
+            resettoolStripButton.Text = "Zresetuj";
+            resettoolStripButton.Click += resettoolStripButton_Click;
+            // 
+            // stoptoolStripButton
+            // 
+            stoptoolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            stoptoolStripButton.Image = (Image)resources.GetObject("stoptoolStripButton.Image");
+            stoptoolStripButton.ImageTransparentColor = Color.Magenta;
+            stoptoolStripButton.Name = "stoptoolStripButton";
+            stoptoolStripButton.Size = new Size(23, 22);
+            stoptoolStripButton.Text = "Zastopuj";
+            // 
+            // toolStripDropDownButton1
+            // 
+            toolStripDropDownButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { xToolStripMenuItem, xToolStripMenuItem1, xToolStripMenuItem2, xToolStripMenuItem3 });
+            toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
+            toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            toolStripDropDownButton1.Size = new Size(29, 22);
+            toolStripDropDownButton1.Text = "toolStripDropDownButton1";
+            // 
+            // xToolStripMenuItem
+            // 
+            xToolStripMenuItem.Name = "xToolStripMenuItem";
+            xToolStripMenuItem.Size = new Size(180, 22);
+            xToolStripMenuItem.Text = "0.25x";
+            // 
+            // xToolStripMenuItem1
+            // 
+            xToolStripMenuItem1.Name = "xToolStripMenuItem1";
+            xToolStripMenuItem1.Size = new Size(180, 22);
+            xToolStripMenuItem1.Text = "0.5x";
+            // 
+            // xToolStripMenuItem2
+            // 
+            xToolStripMenuItem2.Name = "xToolStripMenuItem2";
+            xToolStripMenuItem2.Size = new Size(180, 22);
+            xToolStripMenuItem2.Text = "1x";
+            // 
+            // xToolStripMenuItem3
+            // 
+            xToolStripMenuItem3.Name = "xToolStripMenuItem3";
+            xToolStripMenuItem3.Size = new Size(180, 22);
+            xToolStripMenuItem3.Text = "2x";
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(424, 43);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(276, 296);
+            textBox1.TabIndex = 2;
+            // 
+            // process1
+            // 
+            process1.StartInfo.Domain = "";
+            process1.StartInfo.LoadUserProfile = false;
+            process1.StartInfo.Password = null;
+            process1.StartInfo.StandardErrorEncoding = null;
+            process1.StartInfo.StandardInputEncoding = null;
+            process1.StartInfo.StandardOutputEncoding = null;
+            process1.StartInfo.UserName = "";
+            process1.SynchronizingObject = this;
+            // 
+            // toolStripProgressBar1
+            // 
+            toolStripProgressBar1.Name = "toolStripProgressBar1";
+            toolStripProgressBar1.Size = new Size(100, 22);
+            toolStripProgressBar1.Click += toolStripProgressBar1_Click;
             // 
             // Form1
             // 
@@ -180,5 +281,16 @@
         private ToolStripButton SaveButton;
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
+        private ToolStripButton playtoolStripButton;
+        private ToolStripButton pausetoolStripButton;
+        private ToolStripButton resettoolStripButton;
+        private ToolStripButton stoptoolStripButton;
+        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripMenuItem xToolStripMenuItem;
+        private ToolStripMenuItem xToolStripMenuItem1;
+        private ToolStripMenuItem xToolStripMenuItem2;
+        private ToolStripMenuItem xToolStripMenuItem3;
+        private System.Diagnostics.Process process1;
+        private ToolStripProgressBar toolStripProgressBar1;
     }
 }

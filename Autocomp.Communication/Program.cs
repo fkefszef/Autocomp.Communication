@@ -103,6 +103,10 @@ namespace Autocomp.Communication
             }
         }
 
+        public PlayerMessageProvider()
+        {
+        }
+
         public Sniffer.Message MessageReceived()
         {
             Sniffer.Message message = messages[currIndex];
@@ -206,6 +210,5 @@ namespace Autocomp.Communication
             play_speed = speed;
 
         }
-
     }
 }

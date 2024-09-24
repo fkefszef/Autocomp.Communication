@@ -14,6 +14,8 @@ namespace Autocomp.Communication
         private List<Sniffer.Message> allMessages = new List<Sniffer.Message>(); // Ca³a historia wiadomoœci
         private List<Sniffer.Message> filteredMessages = new List<Sniffer.Message>(); // Przefiltrowane wiadomoœci
 
+        PlayerMessageProvider playerMessageProvider = new PlayerMessageProvider();
+
 
         public Form1()
         {
@@ -26,21 +28,20 @@ namespace Autocomp.Communication
             // Event handler dla zaznaczenia wiersza w ListView
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             FakeMessageProvider fakeMessageProvider = new FakeMessageProvider();
-            for (int i = 0; i < 5; i++)
-            {
-                var message = fakeMessageProvider.MessageReceived();
 
-                // Dodaj wiadomoœæ do listy allMessages
-                allMessages.Add(message); // <---- Dodaj tê liniê
+            var message = fakeMessageProvider.MessageReceived();
 
-                // Dodaj wiadomoœæ do ListView
-                ListViewItem item = new ListViewItem(message.DateTime.ToString());
-                item.SubItems.Add(message.Type.ToString()); // Typ wiadomoœci
-                item.SubItems.Add(message.Content.ToString()); // Treœæ wiadomoœci
-                listView1.Items.Add(item);
-            }
+            // Dodaj wiadomoœæ do listy allMessages
+            allMessages.Add(message); // <---- Dodaj tê liniê
 
-            
+            // Dodaj wiadomoœæ do ListView
+            ListViewItem item = new ListViewItem(message.DateTime.ToString());
+            item.SubItems.Add(message.Type.ToString()); // Typ wiadomoœci
+            item.SubItems.Add(message.Content.ToString()); // Treœæ wiadomoœci
+            listView1.Items.Add(item);
+
+
+
 
             // Przypisanie elementów listy do originalItems po dodaniu wiadomoœci
             originalItems = new ListViewItem[listView1.Items.Count];
@@ -106,7 +107,7 @@ namespace Autocomp.Communication
                 // Jeœli tekst jest pusty, przywróæ wszystkie elementy
                 listView1.Items.Clear();
                 listView1.Items.AddRange(allItems);
-                
+
             }
             else
             {
@@ -202,49 +203,72 @@ namespace Autocomp.Communication
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            
-                // Wywo³anie okna dialogowego do wyboru pliku
-                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+
+            // Wywo³anie okna dialogowego do wyboru pliku
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                openFileDialog.Title = "Wybierz plik z wiadomoœciami";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-                    openFileDialog.Title = "Wybierz plik z wiadomoœciami";
+                    string filePath = openFileDialog.FileName;
 
-                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    // Próba wczytania wiadomoœci
+                    if (messageDataHandler.TryLoad(filePath, out List<Sniffer.Message> loadedMessages))
                     {
-                        string filePath = openFileDialog.FileName;
+                        // Wyczyszczenie listy przed dodaniem nowych wiadomoœci
+                        listView1.Items.Clear();
 
-                        // Próba wczytania wiadomoœci
-                        if (messageDataHandler.TryLoad(filePath, out List<Sniffer.Message> loadedMessages))
+                        allMessages = loadedMessages; // Zapisanie wczytanych wiadomoœci
+
+                        foreach (var message in loadedMessages)
                         {
-                            // Wyczyszczenie listy przed dodaniem nowych wiadomoœci
-                            listView1.Items.Clear();
-
-                            allMessages = loadedMessages; // Zapisanie wczytanych wiadomoœci
-
-                            foreach (var message in loadedMessages)
-                            {
-                                ListViewItem item = new ListViewItem(message.DateTime.ToString());
-                                item.SubItems.Add(message.Type);
-                                item.SubItems.Add(message.Content);
-                                listView1.Items.Add(item);
-                            }
-
-                            // Zaktualizowanie originalItems i allItems
-                            originalItems = new ListViewItem[listView1.Items.Count];
-                            listView1.Items.CopyTo(originalItems, 0);
-                            allItems = new ListViewItem[originalItems.Length];
-                            originalItems.CopyTo(allItems, 0);
-
-                            MessageBox.Show("Wiadomoœci zosta³y wczytane pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            ListViewItem item = new ListViewItem(message.DateTime.ToString());
+                            item.SubItems.Add(message.Type);
+                            item.SubItems.Add(message.Content);
+                            listView1.Items.Add(item);
                         }
-                        else
-                        {
-                            MessageBox.Show("Nie uda³o siê wczytaæ wiadomoœci.", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+
+                        // Zaktualizowanie originalItems i allItems
+                        originalItems = new ListViewItem[listView1.Items.Count];
+                        listView1.Items.CopyTo(originalItems, 0);
+                        allItems = new ListViewItem[originalItems.Length];
+                        originalItems.CopyTo(allItems, 0);
+
+                        MessageBox.Show("Wiadomoœci zosta³y wczytane pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nie uda³o siê wczytaæ wiadomoœci.", "B³¹d", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
+        }
 
-        
+        private void pausetoolStripButton_Click(object sender, EventArgs e)
+        {
+            playerMessageProvider.Pause();
+        }
+
+        private void playtoolStripButton_Click(object sender, EventArgs e)
+        {
+            playerMessageProvider.Play();
+        }
+
+        private void resettoolStripButton_Click(object sender, EventArgs e)
+        {
+            playerMessageProvider.SetPlayPercentage(0);
+        }
+
+        private void stoptoolStripButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripProgressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
