@@ -121,47 +121,47 @@ namespace Autocomp.Communication
         }
 
         //Asynchroniczna Funckja Play ¿eby u¿yæ await Task.Delay, która odpowiada za opóŸnienie
-        public async Task Play()
+        public async Task Play(Form1 form)
+{
+    if (isPaused)
+    {
+        TimeSpan resume_offset = paused_time - startTime;
+        startTime = DateTime.Now - resume_offset;
+        isPaused = false;
+    }
+    else
+    {
+        startTime = DateTime.Now;
+    }
+
+    DateTime firstMessageTime = messages[0].DateTime;
+
+    // Skopiuj listê wiadomoœci, aby unikn¹æ modyfikacji podczas iteracji
+    var messagesCopy = new List<Sniffer.Message>(messages);
+
+    foreach (var message in messagesCopy)
+    {
+        if (isPaused)
         {
-            if (isPaused)
-            {
-                // Jesli odtwarzanie jest zatrzymane, oblicz czas od kiedy zaczac odtwarzanie
-                TimeSpan resume_offset = paused_time - startTime;
-                startTime = DateTime.Now - resume_offset;
-                isPaused = false; // Reset pauzy
-            }
-            else
-            {
-                startTime = DateTime.Now;
-            }
-
-
-
-            // Pobierz czas pierwszej wiadomoœci
-            DateTime firstMessageTime = messages[0].DateTime;
-            // Odtwarzanie wiadomoœci
-            foreach (var message in messages)
-            {
-                if (isPaused)
-                {
-                    break; // Zatrzymaj odtwarzanie gdy pauza
-                }
-
-                // Oblicz czas, kiedy nale¿y wyœwietliæ wiadomoœæ
-                TimeSpan delay = message.DateTime - firstMessageTime;
-
-                // Podzielenie opoznienia przez predkosc
-                delay = TimeSpan.FromTicks((long)(delay.Ticks / play_speed));
-
-                // Oczekiwanie przed wyœwietleniem wiadomoœci
-                await Task.Delay(delay);
-                lastMessageTime = DateTime.Now;
-                double percentage = PlayedPercentageChanged();
-                // Wyœwietl wiadomoœæ (mo¿na tu dodaæ logikê do faktycznego wyœwietlania lub przetwarzania wiadomoœci)
-                //Kod
-            }
+            break; // Zatrzymaj odtwarzanie podczas pauzy
         }
-        
+
+        TimeSpan delay = message.DateTime - firstMessageTime;
+        delay = TimeSpan.FromTicks((long)(delay.Ticks / play_speed));
+
+        await Task.Delay(delay); // Zachowanie odstêpów czasowych
+
+        lastMessageTime = DateTime.Now;
+
+        // Oblicz procent odtwarzania
+        double percentage = PlayedPercentageChanged();
+
+        // Wywo³anie metody dodaj¹cej wiadomoœæ na ListView w g³ównym w¹tku UI
+        form.AddMessageToListView(message);
+    }
+}
+
+
         public double PlayedPercentageChanged()
         {
             if (recordingLength.TotalSeconds <= 0)
@@ -183,7 +183,7 @@ namespace Autocomp.Communication
         {
             // Czas ostatniej wiadomosci
             DateTime endtime = messages[messages.Count].DateTime;
-            
+
             // Obliczenie dlugosci
             TimeSpan duration = endtime - startTime;
 
@@ -198,17 +198,14 @@ namespace Autocomp.Communication
         {
             if (!isPaused)
             {
-                isPaused = true; 
+                isPaused = true;
                 paused_time = DateTime.Now; // Zapisz czas kiedy odtwarzanie zostalo zatrzymane
             }
-
-
         }
 
         public void SetSpeed(double speed)
         {
             play_speed = speed;
-
         }
     }
 }

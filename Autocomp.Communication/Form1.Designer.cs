@@ -200,6 +200,7 @@
             stoptoolStripButton.Name = "stoptoolStripButton";
             stoptoolStripButton.Size = new Size(29, 24);
             stoptoolStripButton.Text = "Zastopuj";
+            stoptoolStripButton.Click += stoptoolStripButton_Click_1;
             // 
             // toolStripDropDownButton1
             // 
@@ -214,25 +215,25 @@
             // xToolStripMenuItem
             // 
             xToolStripMenuItem.Name = "xToolStripMenuItem";
-            xToolStripMenuItem.Size = new Size(126, 26);
+            xToolStripMenuItem.Size = new Size(224, 26);
             xToolStripMenuItem.Text = "0.25x";
             // 
             // xToolStripMenuItem1
             // 
             xToolStripMenuItem1.Name = "xToolStripMenuItem1";
-            xToolStripMenuItem1.Size = new Size(126, 26);
+            xToolStripMenuItem1.Size = new Size(224, 26);
             xToolStripMenuItem1.Text = "0.5x";
             // 
             // xToolStripMenuItem2
             // 
             xToolStripMenuItem2.Name = "xToolStripMenuItem2";
-            xToolStripMenuItem2.Size = new Size(126, 26);
+            xToolStripMenuItem2.Size = new Size(224, 26);
             xToolStripMenuItem2.Text = "1x";
             // 
             // xToolStripMenuItem3
             // 
             xToolStripMenuItem3.Name = "xToolStripMenuItem3";
-            xToolStripMenuItem3.Size = new Size(126, 26);
+            xToolStripMenuItem3.Size = new Size(224, 26);
             xToolStripMenuItem3.Text = "2x";
             // 
             // toolStripProgressBar1
@@ -279,7 +280,7 @@
 
         #endregion
 
-        private ListView listView1;
+        public ListView listView1;
         private ColumnHeader Czas;
         private ColumnHeader Typ;
         private ColumnHeader Treść;

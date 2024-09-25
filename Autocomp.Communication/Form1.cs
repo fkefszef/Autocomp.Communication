@@ -13,10 +13,11 @@ namespace Autocomp.Communication
         private MessageDataHandler messageDataHandler = new MessageDataHandler();
         private List<Sniffer.Message> allMessages = new List<Sniffer.Message>(); // Ca³a historia wiadomoœci
         private List<Sniffer.Message> filteredMessages = new List<Sniffer.Message>(); // Przefiltrowane wiadomoœci
+        private PlayerMessageProvider playerMessageProvider;
+        private FakeMessageProvider fakeMessageProvider;
+        private bool isPlaying = false;
+        public bool AutoscrollEnabled { get; private set; } = false;
 
-        PlayerMessageProvider playerMessageProvider = new PlayerMessageProvider();
-
-        bool autoscroll_enabled = false;
 
         public Form1()
         {
@@ -24,11 +25,11 @@ namespace Autocomp.Communication
             listView1.View = View.Details;
             listView1.FullRowSelect = true; // Umo¿liwia zaznaczenie ca³ego wiersza
             listView1.MultiSelect = false;  // Umo¿liwia zaznaczenie tylko jednego elementu na raz
-
+            playerMessageProvider = new PlayerMessageProvider(allMessages);
 
             // Event handler dla zaznaczenia wiersza w ListView
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
-            FakeMessageProvider fakeMessageProvider = new FakeMessageProvider();
+            fakeMessageProvider = new FakeMessageProvider();
 
             var message = fakeMessageProvider.MessageReceived();
 
@@ -43,12 +44,24 @@ namespace Autocomp.Communication
 
 
 
-
             // Przypisanie elementów listy do originalItems po dodaniu wiadomoœci
             originalItems = new ListViewItem[listView1.Items.Count];
             listView1.Items.CopyTo(originalItems, 0);
             allItems = new ListViewItem[originalItems.Length];
             originalItems.CopyTo(allItems, 0);
+        }
+
+        public void AddMessageToListView(Sniffer.Message message)
+        {
+            ListViewItem item = new ListViewItem(message.DateTime.ToString());
+            item.SubItems.Add(message.Type.ToString());
+            item.SubItems.Add(message.Content.ToString());
+            listView1.Items.Add(item);
+
+            if (AutoscrollEnabled)
+            {
+                listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+            }
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -250,21 +263,34 @@ namespace Autocomp.Communication
         private void pausetoolStripButton_Click(object sender, EventArgs e)
         {
             playerMessageProvider.Pause();
+            isPlaying = false;
         }
 
-        private void playtoolStripButton_Click(object sender, EventArgs e)
+        private async void playtoolStripButton_Click(object sender, EventArgs e)
         {
-            playerMessageProvider.Play();
+            isPlaying = true; // Ustaw flagê na true
+
+            // Uruchom pêtlê odtwarzania, która bêdzie dzia³aæ, dopóki nie zatrzymasz odtwarzania
+            while (isPlaying)
+            {
+                playerMessageProvider = new PlayerMessageProvider(allMessages);
+                await playerMessageProvider.Play(this);
+
+                // Losuj nowe wiadomoœci, aby nie wyœwietla³y siê te same
+                FakeMessageProvider fakeMessageProvider = new FakeMessageProvider();
+                var newMessage = fakeMessageProvider.MessageReceived();
+                allMessages.Add(newMessage);
+                AddMessageToListView(newMessage);
+
+                // Opcjonalnie: Mo¿esz dodaæ opóŸnienie miêdzy wiadomoœciami, np. 1 sekunda
+                await Task.Delay(1000); // 1 sekunda przerwy miêdzy wiadomoœciami
+            }
         }
+
 
         private void resettoolStripButton_Click(object sender, EventArgs e)
         {
             playerMessageProvider.SetPlayPercentage(0);
-        }
-
-        private void stoptoolStripButton_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void toolStripProgressBar1_Click(object sender, EventArgs e)
@@ -274,20 +300,51 @@ namespace Autocomp.Communication
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            autoscroll_enabled = !autoscroll_enabled;
+            // Zmieniamy wartoœæ w³aœciwoœci AutoscrollEnabled
+            AutoscrollEnabled = !AutoscrollEnabled;
 
-            if (autoscroll_enabled)
+            // Jeœli autoscroll jest w³¹czony, ustawiamy odpowiednie t³o i przewijamy do ostatniego elementu
+            if (AutoscrollEnabled)
             {
-                listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+                if (listView1.Items.Count > 0)
+                {
+                    listView1.Items[listView1.Items.Count - 1].EnsureVisible();
+                }
                 toolStripButton3.BackColor = Color.LightBlue;
             }
-
+            // Jeœli autoscroll jest wy³¹czony, przywracamy domyœlne t³o
             else
             {
                 toolStripButton3.BackColor = SystemColors.Control;
             }
+        }
 
+        private async void stoptoolStripButton_Click_1(object sender, EventArgs e)
+        {
+            playerMessageProvider.Pause();
+            isPlaying = false;
+            listView1.Items.Clear();
+            playtoolStripButton.Visible = false;
+            pausetoolStripButton.Visible = false;
+            resettoolStripButton.Visible = false;
+            stoptoolStripButton.Visible = false;
+            toolStripDropDownButton1.Visible = false;
 
+            while (true)
+            {
+                fakeMessageProvider = new FakeMessageProvider();
+                var message = fakeMessageProvider.MessageReceived();
+
+                // Dodaj wiadomoœæ do listy allMessages
+                allMessages.Add(message);
+
+                // Dodaj wiadomoœæ do ListView
+                ListViewItem item = new ListViewItem(message.DateTime.ToString()); //Data wiadomoœci
+                item.SubItems.Add(message.Type.ToString()); // Typ wiadomoœci
+                item.SubItems.Add(message.Content.ToString()); // Treœæ wiadomoœci
+                listView1.Items.Add(item);
+                await Task.Delay(1000); // 1 sekunda przerwy miêdzy wiadomoœciami
+            }
         }
     }
 }
