@@ -42,7 +42,9 @@ namespace Autocomp.Communication
             item.SubItems.Add(message.Content.ToString()); // Treœæ wiadomoœci
             listView1.Items.Add(item);
 
-
+            toolStripProgressBar1.Minimum = 0;
+            toolStripProgressBar1.Maximum = 100;
+            toolStripProgressBar1.Value = 50;
 
             // Przypisanie elementów listy do originalItems po dodaniu wiadomoœci
             originalItems = new ListViewItem[listView1.Items.Count];
@@ -269,6 +271,7 @@ namespace Autocomp.Communication
         private async void playtoolStripButton_Click(object sender, EventArgs e)
         {
             isPlaying = true; // Ustaw flagê na true
+            xToolStripMenuItem2.Checked = true;
 
             // Uruchom pêtlê odtwarzania, która bêdzie dzia³aæ, dopóki nie zatrzymasz odtwarzania
             while (isPlaying)
@@ -282,20 +285,40 @@ namespace Autocomp.Communication
                 allMessages.Add(newMessage);
                 AddMessageToListView(newMessage);
 
-                // Opcjonalnie: Mo¿esz dodaæ opóŸnienie miêdzy wiadomoœciami, np. 1 sekunda
-                await Task.Delay(1000); // 1 sekunda przerwy miêdzy wiadomoœciami
-            }
+                if(xToolStripMenuItem3.Checked) {
+                    await Task.Delay(500); // 0.5 sekundy przerwy miêdzy wiadomoœciami
+                    xToolStripMenuItem3.Checked = true;
+                }
+                else if(xToolStripMenuItem2.Checked) {
+                    await Task.Delay(1000); // 1 sekunda przerwy miêdzy wiadomoœciami
+                    xToolStripMenuItem2.Checked = true;
+                }
+                else if(xToolStripMenuItem1.Checked)
+                {
+                    await Task.Delay(2000); // 2 sekundy przerwy miêdzy wiadomoœciami
+                    xToolStripMenuItem1.Checked = true;
+                }
+                else if(xToolStripMenuItem.Checked)
+                {
+                    await Task.Delay(4000); // 4 sekundy przerwy miêdzy wiadomoœciami
+                    xToolStripMenuItem.Checked = true;
+                }
+
+                }
         }
 
 
         private void resettoolStripButton_Click(object sender, EventArgs e)
         {
-            playerMessageProvider.SetPlayPercentage(0);
+            try
+            {
+                playerMessageProvider.SetPlayPercentage(0);
+            }catch (Exception ex) { MessageBox.Show("Popsute to jest"); }
         }
 
         private void toolStripProgressBar1_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
